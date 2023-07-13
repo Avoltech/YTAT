@@ -54,7 +54,7 @@ def fetch_questions():
             passing_transcript_prompt = f'You are a helpful AI Tutor. Who anwers brief questions about the a following transcript. "TRANSCRIPT: {transcript}"'
 
             with st.spinner("Submitting Transcript..."):
-                print("GOING HERE")
+                # print("GOING HERE")
                 messages = st.session_state['messages']
                 messages = update_chat(messages, "user", passing_transcript_prompt)
                 response = get_chatgpt_response(messages, st.session_state['model'])
@@ -74,7 +74,7 @@ def fetch_questions():
             st.session_state.past.append(mcq_prompt)
             st.session_state.generated.append(response)
             _dict_response = find_dictionary_from_gpt_response_v2(response)
-            print(_dict_response)
+            # print(_dict_response)
             st.session_state['all_questions'] += _dict_response['qs']
 
     else:
@@ -89,7 +89,7 @@ def fetch_questions():
             st.session_state.past.append(mcq_prompt)
             st.session_state.generated.append(response)
             _dict_response = find_dictionary_from_gpt_response_v2(response)
-            print(_dict_response)
+            # print(_dict_response)
 
             st.session_state['all_questions'] += _dict_response['qs']
 

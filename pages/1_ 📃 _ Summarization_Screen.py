@@ -76,7 +76,7 @@ if ('SUMMARY_CREATED' in st.session_state) and (st.session_state['SUMMARY_CREATE
             passing_transcript_prompt = f'You are a helpful AI Tutor. Who anwers brief questions about the a following transcript. "TRANSCRIPT: {transcript}"'
 
             with st.spinner("Submitting Transcript..."):
-                print("GOING HERE")
+                # print("GOING HERE")
                 messages = st.session_state['messages']
                 messages = update_chat(messages, "user", passing_transcript_prompt)
                 response = get_chatgpt_response(messages, st.session_state['model'])

@@ -66,4 +66,9 @@ def reset_state_session_for_new_video():
     st.session_state['past'] = []
     st.session_state['MCQ_TRANSCRIPT_PASSED'] = False
     
+    st.session_state['current_question_idx'] = -1
+    st.session_state['all_questions'] = []
+    st.session_state['total_score'] = 0
+    st.session_state['init_fetch_button_allow'] = True
+    
 
