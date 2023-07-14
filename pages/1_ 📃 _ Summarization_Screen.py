@@ -33,7 +33,7 @@ st.session_state['n_complexity_of_point'] = 2
 
 def get_complexity_prompt(val):
     _complexity_prompts = {
-        1: ".Make the points is easy to understand with least amount of details.",
+        1: ".Make the points easy to understand with least amount of details.",
         2: ".Make the points with moderate complexity.",
         3: ".Make the points with as many detailed as required."
     }
