@@ -9,7 +9,7 @@ ENGINEERED_PROMPTS = [
     '"TRANSCRIPT:',
     'Create 5 mcq questions with 4 options based on the TRANSCRIPT',
     'Create 5 mcq questions with 4 options based on content of the last TRANSCRIPT alone',
-    'Create 5 more new mcq questions with 4 options',
+    'Create 5 more new mcq questions that you did not generate previously with 4 options',
 ]
 
 
@@ -21,7 +21,7 @@ ENGINEERED_PROMPTS_SCREENWISE_DICT = {
     'test': [
         'Create 5 mcq questions with 4 options based on the TRANSCRIPT',
         'Create 5 mcq questions with 4 options based on content of the last TRANSCRIPT alone',
-        'Create 5 more new mcq questions with 4 options'
+        'Create 5 more new mcq questions that you did not generate previously with 4 options'
         ]
     }
 

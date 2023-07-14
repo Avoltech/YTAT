@@ -66,7 +66,7 @@ def fetch_questions():
 
         mcq_prompt = f'Create 5 mcq questions with 4 options based on content of the last TRANSCRIPT alone, send the question in a structured json format as follows: {{"qs":["q": question 1 here, "o":[option1, option2, option3, option4], "c": correct option index, "q": question 2 here...... and so on]}}. End your output with the word "COMPLETE!"'
 
-        with st.spinner("Generating..."):
+        with st.spinner("Generating questions..."):
             messages = st.session_state['messages']
             messages = update_chat(messages, "user", mcq_prompt)
             response = get_chatgpt_response(messages, st.session_state['model'])
@@ -79,7 +79,7 @@ def fetch_questions():
 
     else:
         transcript = st.session_state['TRANSCRIPT']
-        mcq_prompt = f'Create 5 more new mcq questions with 4 options based on content of the last TRANSCRIPT alone, send the question in a structured json format as follows: {{"qs":["q": question 1 here, "o":[option1, option2, option3, option4], "c": correct option index, "q": question 2 here...... and so on]}}. End your output with the word "COMPLETE!"'
+        mcq_prompt = f'Create 5 more new mcq questions that you did not generate previously with 4 options based on content of the last TRANSCRIPT alone, send the question in a structured json format as follows: {{"qs":["q": question 1 here, "o":[option1, option2, option3, option4], "c": correct option index, "q": question 2 here...... and so on]}}. End your output with the word "COMPLETE!"'
 
         with st.spinner("Generating more questions..."):
             messages = st.session_state['messages']

@@ -40,14 +40,14 @@ def get_english_transcript(video_id, transcript_type='any'):
         _transcript_fetch =  _t.fetch()
         full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
         full_transcript = full_transcript.replace("\n", '')
-        return full_transcript, 'manual'
+        return full_transcript, 'manual', _transcript_fetch
     elif automatically_created_transcript_available:
         _transcript_fetch =  _t.fetch()
         full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
         full_transcript = full_transcript.replace("\n", '')
-        return full_transcript, 'auto'
+        return full_transcript, 'auto', _transcript_fetch
     
-    return None, None
+    return None, None, None
 
 def vertical_spacer(val):
     for _vs in range(val):
@@ -55,6 +55,7 @@ def vertical_spacer(val):
 
 
 def reset_state_session_for_new_video():
+
     st.session_state['SUMMARY_CREATED'] = False
     st.session_state['SUMMARY_SCREEN_DISPLAYED_ONCE_FLAG'] = False
     st.session_state['TRANSCRIPT_SUBMITTED'] = False
@@ -65,10 +66,57 @@ def reset_state_session_for_new_video():
     st.session_state['generated'] = []
     st.session_state['past'] = []
     st.session_state['MCQ_TRANSCRIPT_PASSED'] = False
-    
+
     st.session_state['current_question_idx'] = -1
     st.session_state['all_questions'] = []
     st.session_state['total_score'] = 0
     st.session_state['init_fetch_button_allow'] = True
     
 
+
+def cvt_str_int_seconds_range(slider_response):
+    return [int(slider_response[0].split(':')[0])*60 + int(slider_response[0].split(':')[1]) , int(slider_response[1].split(':')[0])*60 + int(slider_response[1].split(':')[1])]
+
+
+def get_token_count(slider_response, _transcript_fetch):
+    a = cvt_str_int_seconds_range(slider_response)
+
+    transcripts = list(_transcript_fetch)
+    print(slider_response)
+    start = [i['start'] for i in transcripts]
+    end = [i['start'] + i['duration'] for i in transcripts]
+
+    start_index = 0
+    end_index = 0
+    for i in range(len(transcripts)):
+        if a[0] > transcripts[i]['start']:
+            start_index = i
+        if a[1] > transcripts[i]['start'] + transcripts[i]['duration']:
+            end_index = i
+
+
+    final = transcripts[start_index : end_index+1]
+    desired_transcript = ' '.join([seg['text'] for seg in final])
+    return int(len(desired_transcript.split(' '))/0.72)
+
+
+def get_clipped_video_section(slider_response, _transcript_fetch):
+    a = cvt_str_int_seconds_range(slider_response)
+
+    transcripts = list(_transcript_fetch)
+    print(slider_response)
+    start = [i['start'] for i in transcripts]
+    end = [i['start'] + i['duration'] for i in transcripts]
+
+    start_index = 0
+    end_index = 0
+    for i in range(len(transcripts)):
+        if a[0] > transcripts[i]['start']:
+            start_index = i
+        if a[1] > transcripts[i]['start'] + transcripts[i]['duration']:
+            end_index = i
+
+
+    final = transcripts[start_index : end_index+1]
+    desired_transcript = ' '.join([seg['text'] for seg in final])
+    return desired_transcript

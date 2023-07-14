@@ -93,9 +93,9 @@ if ('SUMMARY_CREATED' in st.session_state) and (st.session_state['SUMMARY_CREATE
             n_complexity_of_point = st.session_state['n_complexity_of_point']
             summary_prompt = f'For given TRANSCRIPT, return a structured JSON list of the summary with {n_key_points} key points in this format: {{"points": [point, point, ...]}}' + get_complexity_prompt(n_complexity_of_point)
 
-            with st.spinner("generating..."):
+            with st.spinner("Generating key points..."):
                 messages = st.session_state['messages']
-                _messages = dedup_transcript_message(messages)
+                _messages = dedup_transcript_message(messages, specific_screen=True, screen_name='summary')
                 _messages = update_chat(_messages, "user", summary_prompt)
                 response = get_chatgpt_response(_messages, st.session_state['model'])
                 messages = update_chat(_messages, "assistant", response)
@@ -124,7 +124,7 @@ if ('SUMMARY_CREATED' in st.session_state) and (st.session_state['SUMMARY_CREATE
         print("========\n\n")
 
 
-    # with st.expander("Show Messages"):
-    #     st.write(messages)
+    with st.expander("Show Messages"):
+        st.write(st.session_state['messages'])
 
     
