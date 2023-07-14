@@ -29,7 +29,7 @@ st.markdown("<h4 style='color: grey; text-align: center;'>🔫 Just the bullet p
 
 
 st.session_state['n_key_points'] = 5
-st.session_state['n_complexity_of_point'] = 1
+st.session_state['n_complexity_of_point'] = 2
 
 def get_complexity_prompt(val):
     _complexity_prompts = {
@@ -44,9 +44,11 @@ with st.container():
     with col1:
         st.session_state['n_key_points'] = st.slider('Number of points:', min_value=1, max_value=15, value=5, step=1, on_change=refetch_summary)
     with col2:
-        st.session_state['n_complexity_of_point'] = st.slider('Complexity of point:', min_value=1, max_value=3, value=2, step=1, on_change=refetch_summary)
+        st.session_state['n_complexity_of_point'] = st.slider('Complexity of point:', min_value=1, max_value=3, value=st.session_state['n_complexity_of_point'], step=1, on_change=refetch_summary)
 
 vertical_spacer(3)
+
+# st.write(st.session_state['n_complexity_of_point'])
 
 if ('TRANSCRIPT' not in st.session_state) or (st.session_state['TRANSCRIPT'] == ''):
     st.warning("Plug in the video link on homepage to get started!", icon="🎬")
@@ -124,7 +126,7 @@ if ('SUMMARY_CREATED' in st.session_state) and (st.session_state['SUMMARY_CREATE
         print("========\n\n")
 
 
-    with st.expander("Show Messages"):
-        st.write(st.session_state['messages'])
+    # with st.expander("Show Messages"):
+    #     st.write(st.session_state['messages'])
 
     

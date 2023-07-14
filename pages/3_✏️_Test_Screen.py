@@ -8,7 +8,6 @@ sys.path.append(os.path.dirname(os.path.dirname(directory)))
 
 import streamlit as st
 from st_click_detector import click_detector
-from text_utils import sample_questions
 from utils import vertical_spacer
 from utils import get_english_transcript
 from chat_utils import get_initial_message, get_chatgpt_response, update_chat, check_if_part_of_engineered_prompt, find_dictionary_from_gpt_response_v2

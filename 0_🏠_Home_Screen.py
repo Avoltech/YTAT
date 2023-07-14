@@ -4,6 +4,10 @@ from pytube import YouTube
 import openai
 from annotated_text import annotated_text
 
+
+st.set_page_config(
+    page_title="Youtube Anatomy",
+)
 streamlit_style = """
 			<style>
 			@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');

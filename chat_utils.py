@@ -78,22 +78,22 @@ def update_chat(messages, role, content):
     return messages
 
 def find_dictionary_from_gpt_response(text, keys=["points", "mcqs"]):
-    print(f"printing {text}")
+    # print(f"printing {text}")
     if re.search('({.+})', text) == None:
-        print("None, dict obj")
+        # print("None, dict obj")
         return False, {}
     x = ast.literal_eval(re.search('({.+})', text).group(0))
-    print(f"printing x {x}")
-    print(x.keys())
+    # print(f"printing x {x}")
+    # print(x.keys())
     for i in keys:
         if i in x.keys():
             return True, x
-    print("Default Return")
+    # print("Default Return")
     return False, {}
 
 def find_dictionary_from_gpt_response_v2(text, keys=["points", "qs"]):
     try:
-        print(f"printing {text}")
+        # print(f"printing {text}")
         _st_idx = text.index('{')
         try:
             _end_idx = text.rindex('}')
