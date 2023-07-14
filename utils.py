@@ -15,39 +15,41 @@ def get_english_transcript(video_id, transcript_type='any'):
     return params:
         transcript object
     """
-    
-    if 'youtube.com/watch?v=' in video_id:
-        video_id = video_id.split('?v=')[-1]
-
-    transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-    
-    manually_created_transcript_available = False
-    automatically_created_transcript_available = False
-    
     try:
-        _t =  transcript_list.find_manually_created_transcript(['en'])
-        manually_created_transcript_available = True
-    except Exception as e:
-        #Manually created "english" transcript not available
+        if 'youtube.com/watch?v=' in video_id:
+            video_id = video_id.split('?v=')[-1]
+
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        
+        manually_created_transcript_available = False
+        automatically_created_transcript_available = False
+        
         try:
-            _t =  transcript_list.find_generated_transcript(['en'])
-            automatically_created_transcript_available = True
+            _t =  transcript_list.find_manually_created_transcript(['en'])
+            manually_created_transcript_available = True
         except Exception as e:
-            #Automatically created "english" transcript not available
-            pass
-    
-    if manually_created_transcript_available:
-        _transcript_fetch =  _t.fetch()
-        full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
-        full_transcript = full_transcript.replace("\n", '')
-        return full_transcript, 'manual', _transcript_fetch
-    elif automatically_created_transcript_available:
-        _transcript_fetch =  _t.fetch()
-        full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
-        full_transcript = full_transcript.replace("\n", '')
-        return full_transcript, 'auto', _transcript_fetch
-    
-    return None, None, None
+            #Manually created "english" transcript not available
+            try:
+                _t =  transcript_list.find_generated_transcript(['en'])
+                automatically_created_transcript_available = True
+            except Exception as e:
+                #Automatically created "english" transcript not available
+                pass
+
+        if manually_created_transcript_available:
+            _transcript_fetch =  _t.fetch()
+            full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
+            full_transcript = full_transcript.replace("\n", '')
+            return full_transcript, 'manual', _transcript_fetch
+        elif automatically_created_transcript_available:
+            _transcript_fetch =  _t.fetch()
+            full_transcript = ' '.join([seg['text'] for seg in _transcript_fetch])
+            full_transcript = full_transcript.replace("\n", '')
+            return full_transcript, 'auto', _transcript_fetch
+        
+        return None, None, None
+    except:
+        return None, None, None
 
 def vertical_spacer(val):
     for _vs in range(val):
@@ -55,6 +57,9 @@ def vertical_spacer(val):
 
 
 def reset_state_session_for_new_video():
+    # st.session_state['video_image'] = []
+    # st.session_state['video_title'] = ''
+
 
     st.session_state['SUMMARY_CREATED'] = False
     st.session_state['SUMMARY_SCREEN_DISPLAYED_ONCE_FLAG'] = False
@@ -82,7 +87,7 @@ def get_token_count(slider_response, _transcript_fetch):
     a = cvt_str_int_seconds_range(slider_response)
 
     transcripts = list(_transcript_fetch)
-    print(slider_response)
+    # print(slider_response)
     start = [i['start'] for i in transcripts]
     end = [i['start'] + i['duration'] for i in transcripts]
 
@@ -104,7 +109,7 @@ def get_clipped_video_section(slider_response, _transcript_fetch):
     a = cvt_str_int_seconds_range(slider_response)
 
     transcripts = list(_transcript_fetch)
-    print(slider_response)
+    # print(slider_response)
     start = [i['start'] for i in transcripts]
     end = [i['start'] + i['duration'] for i in transcripts]
 

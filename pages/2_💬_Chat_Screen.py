@@ -42,7 +42,7 @@ if st.session_state['CHAT_SCREEN_ONCE_FLAG'] == True:
         passing_transcript_prompt = f'You are a helpful AI Tutor. Who anwers questions about the following transcript. "TRANSCRIPT: {transcript}"'
 
         with st.spinner("Submitting Transcript..."):
-            print("GOING HERE")
+            # print("GOING HERE")
             messages = st.session_state['messages']
             messages = update_chat(messages, "user", passing_transcript_prompt)
             response = get_chatgpt_response(messages, st.session_state['model'])
@@ -89,7 +89,7 @@ if ('TRANSCRIPT_SUBMITTED' in st.session_state) and (st.session_state['TRANSCRIP
                     # prompt_to_pass = f'Based on the information that you know, answer : {query}'
                     # prompt_to_pass = query
 
-                print("hERE")
+                # print("hERE")
                 messages = st.session_state['messages']
                 _messages = dedup_transcript_message(messages, specific_screen=True, screen_name="chat")
                 st.session_state['_messages'] = _messages

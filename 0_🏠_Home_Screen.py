@@ -2,7 +2,7 @@ import streamlit as st
 from utils import get_english_transcript, reset_state_session_for_new_video, vertical_spacer, cvt_str_int_seconds_range, get_token_count, get_clipped_video_section 
 from pytube import YouTube
 import openai
-
+from annotated_text import annotated_text
 
 streamlit_style = """
 			<style>
@@ -73,6 +73,8 @@ with st.sidebar:
             apikey = st.text_input(label="API KEY", type='password', key='text_input_apikey', value=st.session_state['apikey'])
             model = st.selectbox(label="Model", key='selectbox_model', options=MODELS, index=MODELS.index(st.session_state['model']))
 
+_token_text_color_dict = ["#afa","#faa"]
+
 
 # st.write("Paste a youtube url to get started")
 _img_col, _vid_title_col = st.columns([2, 6])
@@ -92,7 +94,8 @@ elif ((youtube_url != '')):
     st.session_state['YOUTUBE_VIDEO_URL'] = youtube_url
     try:
         transcript, transcript_type, transcript_fetch_obj = get_english_transcript(st.session_state['YOUTUBE_VIDEO_URL'])
-    except:
+    except Exception as e:
+        print(e)
         st.error("Unable to fetch transcript.\nPlease recheck the video link and try again.", icon="🥶")
 
     if (apikey == ''):
@@ -110,24 +113,28 @@ elif ((youtube_url != '')):
             if st.session_state['FULL_TRANSCRIPT'] != transcript:
                 st.session_state['FULL_TRANSCRIPT'] = transcript
             
-            if st.session_state['video_image'] == []:
-                st.session_state['video_image'] = get_thumbnail(youtube_url)
-            if st.session_state['video_title'] == '':
-                st.session_state['video_title'] = get_title(youtube_url)
-
-            
+            st.session_state['video_image'] = get_thumbnail(st.session_state['YOUTUBE_VIDEO_URL'])
+            st.session_state['video_title'] = get_title(st.session_state['YOUTUBE_VIDEO_URL'])
             _img_col_placeholder.image(image = st.session_state['video_image'] , use_column_width=True)
             _vide_title_col_placeholder.subheader(st.session_state['video_title'] )
+
+            total_vid_seconds = get_duration(st.session_state['YOUTUBE_VIDEO_URL'])
+
+            if (st.session_state['prev_video_url'] != st.session_state['YOUTUBE_VIDEO_URL']):
+                # _img_col_placeholder.image(image = st.session_state['video_image'] , use_column_width=True)
+                # _vide_title_col_placeholder.subheader(st.session_state['video_title'] )
+                st.session_state['slider_vals'] = ("0:0",str(total_vid_seconds//60) + ':' + str(total_vid_seconds%60))
 
             # st.session_state['video_image'] = get_thumbnail(youtube_url)
             # st.session_state['video_title'] = get_title(youtube_url)
             
             # _img_col_placeholder.image(image = get_thumbnail(youtube_url), use_column_width=True)
             # _vide_title_col_placeholder.subheader(get_title(youtube_url))
-            total_vid_seconds = get_duration(youtube_url)
             
             if 'slider_vals' not in st.session_state:
                 st.session_state['slider_vals'] = ("0:0",str(total_vid_seconds//60) + ':' + str(total_vid_seconds%60))
+
+            # st.write(st.session_state['slider_vals'])
 
             estimated_token_count = get_token_count(st.session_state['slider_vals'], transcript_fetch_obj)
 
@@ -140,10 +147,10 @@ elif ((youtube_url != '')):
                 tlist = []
                 for i in range(0, total_vid_seconds, 10):
                     tlist.append(str(i//60) + ':' + str(i%60))
-                if total_vid_seconds%10 != 0:
-                    i = total_vid_seconds
-                    tlist.append(str(i//60) + ':' + str(i%60))
-
+            
+                i = total_vid_seconds
+                tlist.append(str(i//60) + ':' + str(i%60))
+                # st.write(tlist)
                 # st.write(total_vid_seconds)
                 # st.write(tlist)
                 # st.write(st.session_state['slider_vals'])
@@ -151,10 +158,28 @@ elif ((youtube_url != '')):
                 estimated_token_count = get_token_count(st.session_state['slider_vals'], transcript_fetch_obj)
 
 
-                    
-                st.write(f"Total tokens in selected section : {estimated_token_count}")
-                st.write(f"Maxiumum tokens you can have with current selected model: {st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']]}")
+                # annotated_text(
+                #     "Maxiumum tokens you can have with current selected model: ",
+                #     (str(st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']]), "", "#8ef"),
+                # )
+                # st.write(f"Total tokens in selected section : {estimated_token_count}")
 
+                if (estimated_token_count > st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']]):
+                     annotated_text(
+                        "Total tokens in selected section: ",
+                        (str(estimated_token_count), "", _token_text_color_dict[1]),
+                    )
+                else:
+                    annotated_text(
+                        "Total tokens in selected section: ",
+                        (str(estimated_token_count), "", _token_text_color_dict[0]),
+                    )
+
+                # st.write(f"Maxiumum tokens you can have with current selected model: {}")
+                annotated_text(
+                    "Maxiumum tokens you can have with current selected model: ",
+                    (str(st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']]), "", "#8ef"),
+                )
 
                 if (estimated_token_count <= st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']]):
                     transcript = get_clipped_video_section(st.session_state['slider_vals'], transcript_fetch_obj)
@@ -167,20 +192,24 @@ elif ((youtube_url != '')):
                 st.session_state['TRANSCRIPT'] = transcript
                 st.success("Huston to Apollo, you are set to go!!!", icon="🚀")
 
-                st.write(estimated_token_count > st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']])
-                st.write(st.session_state['HOME_SCREEN_NEED_TO_SHOW_SLIDER_FLAG'] == True)
+                # st.write(estimated_token_count > st.session_state['TOKEN_THRESHOLD_DICT'][st.session_state['model']])
+                # st.write(st.session_state['HOME_SCREEN_NEED_TO_SHOW_SLIDER_FLAG'] == True)
                 
         if st.session_state['prev_video_url'] != st.session_state['YOUTUBE_VIDEO_URL']:
             if st.session_state['prev_video_url'] != '':
                 st.session_state['HOME_SCREEN_NEED_TO_SHOW_SLIDER_FLAG'] = False
-                st.session_state['slider_vals'] = None
-
             st.session_state['prev_video_url'] = st.session_state['YOUTUBE_VIDEO_URL']
             reset_state_session_for_new_video()
+        # if st.session_state['video_image'] == []:
+        #     st.session_state['video_image'] = get_thumbnail(st.session_state['YOUTUBE_VIDEO_URL'])
+        # if st.session_state['video_title'] == '':
+        #     st.session_state['video_title'] = get_title(st.session_state['YOUTUBE_VIDEO_URL'])
 
         # st.write(type(get_thumbnail(youtube_url)))
         # st.write(get_thumbnail(youtube_url))
         # st.write((st.session_state['prev_video_url'] != st.session_state['YOUTUBE_VIDEO_URL']) or (st.session_state['prev_video_url'] == ''))
         # st.write(st.session_state['prev_video_url'] == '')
 
+        # st.write(st.session_state['video_image'])
+        # st.write(st.session_state['video_title'])
 
